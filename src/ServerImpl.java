@@ -1,6 +1,7 @@
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -16,9 +17,16 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 
 	@Override
 	public boolean newClient(ClientInterface ci) throws RemoteException{
-		clients.add(ci);
-		clientNames.add(ci.getName());
-		ci.receiveMessage("[Server] Welcome Client "+ci.getName());
+		Platform.runLater(() -> {
+			try {
+				clients.add(ci);
+				clientNames.add(ci.getName());
+				ci.receiveMessage("[Server] Welcome Client "+ci.getName());
+
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		});
 		return true;
 	}
 
@@ -43,8 +51,15 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 
 	@Override
 	public void disconnectClient(ClientInterface ci) throws RemoteException {
-		clientNames.removeAll(ci.getName());
-		clients.remove(ci);
+		Platform.runLater(() ->  {
+			try {
+				clientNames.removeAll(ci.getName());
+				clients.remove(ci);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		});
+
 	}
 
 }

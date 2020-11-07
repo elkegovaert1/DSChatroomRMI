@@ -51,7 +51,7 @@ public class ServerScreen extends Application {
 		System.out.println("[System] Chat Server is ready.");
 
 		Label clientLabel = new Label("Clients Connected");
-		ListView<String> clientView = new ListView<String>();
+		ListView<String> clientView = new ListView<>();
 		ObservableList<String> clientList = si.clientNames;
 		clientView.setItems(clientList);
 

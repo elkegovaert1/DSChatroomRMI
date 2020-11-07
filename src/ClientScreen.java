@@ -152,7 +152,7 @@ public class ClientScreen extends Application {
 
 	@Override
 	public void stop() throws RemoteException {
-		si.disconnectClient(ci);
+		ci.disconnected();
 		System.exit(0);
 	}
 
