@@ -7,6 +7,7 @@ public interface ClientInterface extends Remote{
 	
 	public String getName() throws RemoteException;
 	public void receiveMessage(String s) throws RemoteException;
+	public void disconnected() throws RemoteException;
 	
 	
 
