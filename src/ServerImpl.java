@@ -1,5 +1,7 @@
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.List;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -19,9 +21,18 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 	public boolean newClient(ClientInterface ci) throws RemoteException{
 		Platform.runLater(() -> {
 			try {
+				for(ClientInterface client : clients) {
+					client.connectClient(ci.getName());
+				}
 				clients.add(ci);
 				clientNames.add(ci.getName());
 				ci.receiveMessage("[Server] Welcome Client "+ci.getName());
+				List<String> list = new ArrayList<>();
+				for(String s : clientNames) {
+					list.add(s);
+				}
+				ci.generatePriveBerichten(list);
+				
 
 			} catch (RemoteException e) {
 				e.printStackTrace();
@@ -34,7 +45,7 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 	public void sendToAll(String s, ClientInterface from) throws RemoteException{
 		for(ClientInterface ci : clients) {
 			try {
-				ci.receiveMessage("\n["+from.getName()+"] "+ s);
+				ci.receiveMessage("["+from.getName()+"] "+ s);
 			} catch(Exception e){e.printStackTrace();}
 		}
 	}
@@ -55,11 +66,30 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 			try {
 				clientNames.removeAll(ci.getName());
 				clients.remove(ci);
+				for(ClientInterface client : clients) {
+					client.disconnectClient(ci.getName());
+				}
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
 		});
 
+	}
+
+	@Override
+	public ObservableList<String> getClientNames() throws RemoteException {
+		return clientNames;
+	}
+
+	@Override
+	public void sendToOne(String s, ClientInterface from, String to) throws RemoteException {
+		for(ClientInterface client : clients) {
+			if(to.equals(client.getName())) {
+				client.receivePrivateMessage(s, from.getName());
+				break;
+			}
+		}
+		from.receivePrivateMessage(s, from.getName());
 	}
 
 }

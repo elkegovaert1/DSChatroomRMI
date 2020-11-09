@@ -32,6 +32,9 @@ public class priveGesprek {
     public void setClient(ClientInterface client) {
         this.client = client;
     }
+    public void addBericht(String s) {
+    	berichten.add(s);
+    }
 
 
 

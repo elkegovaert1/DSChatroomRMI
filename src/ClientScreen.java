@@ -1,5 +1,6 @@
 import javafx.application.Application;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -7,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -22,18 +24,20 @@ import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+
 public class ClientScreen extends Application {
 	public ServerInterface si;
 	public ClientImpl ci;
+	
 
 	private void startClient() throws RemoteException {
 		ClientInterface ci = null;
 
 		try {
 			if (System.getSecurityManager() == null) {
-				System.setProperty("java.security.policy", "file:\\C:\\Users\\elkeg\\IdeaProjects\\DSChatroomRMIClient\\src\\security.policy");
-				RMISecurityManager securityManager = new RMISecurityManager();
-	            System.setSecurityManager(securityManager);
+				//System.setProperty("java.security.policy", "file:\\C:\\Users\\elkeg\\IdeaProjects\\DSChatroomRMIClient\\src\\security.policy");
+				//RMISecurityManager securityManager = new RMISecurityManager();
+	            //System.setSecurityManager(securityManager);
 	        }
 
 			Registry myRegistry = LocateRegistry.getRegistry("localhost", 1099);
@@ -85,9 +89,9 @@ public class ClientScreen extends Application {
 		submitClientInfoButton.setOnAction(Event -> {
 			try {
 				if (System.getSecurityManager() == null) {
-					System.setProperty("java.security.policy", "file:\\C:\\Users\\elkeg\\IdeaProjects\\DSChatroomRMIClient\\src\\security.policy");
-					RMISecurityManager securityManager = new RMISecurityManager();
-					System.setSecurityManager(securityManager);
+					//System.setProperty("java.security.policy", "file:\\C:\\Users\\elkeg\\IdeaProjects\\DSChatroomRMIClient\\src\\security.policy");
+					//RMISecurityManager securityManager = new RMISecurityManager();
+					//System.setSecurityManager(securityManager);
 				}
 
 				Registry myRegistry = LocateRegistry.getRegistry("localhost", 1099);
@@ -120,7 +124,7 @@ public class ClientScreen extends Application {
 		return new Scene(rootPane, 400, 400);
 	}
 
-	public Scene makeChatUI(ClientImpl client, ServerInterface server) {
+	public Scene makeChatUI(ClientImpl client, ServerInterface server) throws RemoteException{
 		GridPane rootPane = new GridPane();
 		rootPane.setPadding(new Insets(20));
 		rootPane.setAlignment(Pos.CENTER);
@@ -131,7 +135,7 @@ public class ClientScreen extends Application {
 		ListView<String> chatListView = new ListView<String>();
 		chatListView.setItems(client.chatLog);
 
-		//setupPriveListView(rootPane);
+		setupPriveListView(rootPane);
 
 		TextField chatTextField = new TextField();
 		chatTextField.setOnAction(event -> {
@@ -155,5 +159,64 @@ public class ClientScreen extends Application {
 		ci.disconnected();
 		System.exit(0);
 	}
+	public void setupPriveListView(GridPane rootPane) throws RemoteException{
+    	ListView<priveGesprek> priveListView = new ListView<priveGesprek>(); 
+        
+        priveListView.setItems(ci.berichten);
+        priveListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+            @Override
+            public void handle(MouseEvent event) {
+            	
+            	priveGesprek pg = priveListView.getSelectionModel().getSelectedItem();
+                //System.out.println("clicked on " + pg.getPartner());
+                rootPane.getChildren().remove(priveListView);
+                try {
+					handleListClick(pg, rootPane);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+                
+            }
+        });
+        rootPane.add(priveListView, 1, 0);
+    }
+	public void handleListClick(priveGesprek pg, GridPane rootPane) throws RemoteException{
+        ListView<String> priveListView = new ListView<String>();
+        priveListView.setItems(pg.getBerichten());
+        rootPane.add(priveListView, 1, 0);
+        
+        GridPane pane = new GridPane();
+        
+        TextField priveTextField = new TextField();
+        priveTextField.setOnAction(event -> {
+        	try {
+				si.sendToOne(priveTextField.getText(), ci, pg.getPartner());
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            priveTextField.clear();
+        });
+        
+        Button back = new Button("Back");
+        back.setOnAction(Event -> {
+        	rootPane.getChildren().remove(pane);
+        	rootPane.getChildren().remove(priveListView);
+        	try {
+				setupPriveListView(rootPane);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        });
+        
+        pane.add(priveTextField, 0, 0);
+        pane.add(back, 1, 0);
+        
+        rootPane.add(pane, 1, 1);
+        
+    }
 
 }
