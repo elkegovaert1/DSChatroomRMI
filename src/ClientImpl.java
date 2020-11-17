@@ -61,7 +61,6 @@ public class ClientImpl extends UnicastRemoteObject implements ClientInterface{
 
 	@Override
 	public void receivePrivateMessage(String s, String sender) throws RemoteException {
-		System.out.println("Ontvangen van... " + s);
 		for (int i = 0; i < berichten.size(); i++) {
 			priveGesprek pg = berichten.get(i);
 			if(pg.getPartner().equals(sender)){

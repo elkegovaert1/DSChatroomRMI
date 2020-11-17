@@ -51,11 +51,6 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 				e.printStackTrace();
 			}
 		}
-		/*for(ClientInterface ci : clients) {
-			try {
-				ci.receiveMessage("["+from.getName()+"] "+ s);
-			} catch(Exception e){e.printStackTrace();}
-		}*/
 	}
 
 	@Override
@@ -91,25 +86,15 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 
 	@Override
 	public void sendToOne(String s, ClientInterface from, String to) throws RemoteException {
-		System.out.println("Sending to one... " + to);
 		for (int i = 0; i < clients.size(); i++) {
 			if(to.equals(clients.get(i).getName())) {
 				// naar persoon
 				clients.get(i).receivePrivateMessage(s, from.getName());
 				// naar zelf
 				from.addPrivateMessage(s, to);
-				//from.receivePrivateMessage(s, from.getName());
 				break;
 			}
 		}
-		/*for(ClientInterface client : clients) {
-			if(to.equals(client.getName())) {
-				client.receivePrivateMessage(s, from.getName());
-				break;
-			}
-		}*/
-
-		//from.receivePrivateMessage(s, from.getName());
 	}
 
 }
