@@ -52,8 +52,7 @@ public class ServerScreen extends Application {
 
 		Label clientLabel = new Label("Clients Connected");
 		ListView<String> clientView = new ListView<>();
-		ObservableList<String> clientList = si.clientNames;
-		clientView.setItems(clientList);
+		clientView.setItems(si.clientNames);
 
 		rootPane.add(clientLabel, 0, 0);
 		rootPane.add(clientView, 0, 1);

@@ -20,6 +20,12 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 
 	@Override
 	public boolean newClient(ClientInterface ci) throws RemoteException{
+		// controle niet dezelfde naam
+		for (ClientInterface client: clients) {
+			if (ci.getName().equals(client.getName())) {
+				return false;
+			}
+		}
 		Platform.runLater(() -> {
 			try {
 				for(ClientInterface client : clients) {

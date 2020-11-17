@@ -102,13 +102,16 @@ public class ClientScreen extends Application {
 				String username = nameField.getText();
 				ci = new ClientImpl(username, si);
 				si.sendToAll("Just Connected",ci);
-				si.newClient(ci);
-
-				/* Change the scene of the primaryStage */
-				primaryStage.close();
-				primaryStage.setScene(makeChatUI(ci, si));
-				primaryStage.setTitle(ci.getName());
-				primaryStage.show();
+				boolean isConnected = si.newClient(ci);
+				if (!isConnected) {
+					errorLabel.setText("Username already taken.");
+				} else {
+					/* Change the scene of the primaryStage */
+					primaryStage.close();
+					primaryStage.setScene(makeChatUI(ci, si));
+					primaryStage.setTitle(ci.getName());
+					primaryStage.show();
+				}
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -159,6 +162,7 @@ public class ClientScreen extends Application {
 		ci.disconnected();
 		System.exit(0);
 	}
+
 	public void setupPriveListView(GridPane rootPane) throws RemoteException{
     	ListView<priveGesprek> priveListView = new ListView<>();
         
