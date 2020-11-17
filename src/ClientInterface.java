@@ -15,6 +15,7 @@ public interface ClientInterface extends Remote{
 	public void disconnectClient(String s) throws RemoteException;
 	public void connectClient(String s) throws RemoteException;
 	public void receivePrivateMessage(String s, String sender) throws RemoteException;
+	public void addPrivateMessage(String s, String receiver) throws RemoteException;
 	
 	
 

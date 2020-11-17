@@ -1,6 +1,7 @@
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javafx.application.Platform;
@@ -43,11 +44,18 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 
 	@Override
 	public void sendToAll(String s, ClientInterface from) throws RemoteException{
-		for(ClientInterface ci : clients) {
+		for (int i = 0; i < clients.size(); i++) {
+			try {
+				clients.get(i).receiveMessage("["+from.getName()+"] "+ s);
+			} catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+		/*for(ClientInterface ci : clients) {
 			try {
 				ci.receiveMessage("["+from.getName()+"] "+ s);
 			} catch(Exception e){e.printStackTrace();}
-		}
+		}*/
 	}
 
 	@Override
@@ -83,13 +91,25 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 
 	@Override
 	public void sendToOne(String s, ClientInterface from, String to) throws RemoteException {
-		for(ClientInterface client : clients) {
+		System.out.println("Sending to one... " + to);
+		for (int i = 0; i < clients.size(); i++) {
+			if(to.equals(clients.get(i).getName())) {
+				// naar persoon
+				clients.get(i).receivePrivateMessage(s, from.getName());
+				// naar zelf
+				from.addPrivateMessage(s, to);
+				//from.receivePrivateMessage(s, from.getName());
+				break;
+			}
+		}
+		/*for(ClientInterface client : clients) {
 			if(to.equals(client.getName())) {
 				client.receivePrivateMessage(s, from.getName());
 				break;
 			}
-		}
-		from.receivePrivateMessage(s, from.getName());
+		}*/
+
+		//from.receivePrivateMessage(s, from.getName());
 	}
 
 }

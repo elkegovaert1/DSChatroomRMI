@@ -30,7 +30,7 @@ public class ClientScreen extends Application {
 	public ClientImpl ci;
 	
 
-	private void startClient() throws RemoteException {
+	/*private void startClient() throws RemoteException {
 		ClientInterface ci = null;
 
 		try {
@@ -59,7 +59,7 @@ public class ClientScreen extends Application {
 			System.out.println("Hello Client exception: " + e);
 			e.printStackTrace();
 		}
-	}
+	}*/
 
 	public static void main(String[] args) throws RemoteException {
 		launch();
@@ -101,8 +101,8 @@ public class ClientScreen extends Application {
 
 				String username = nameField.getText();
 				ci = new ClientImpl(username, si);
-				si.newClient(ci);
 				si.sendToAll("Just Connected",ci);
+				si.newClient(ci);
 
 				/* Change the scene of the primaryStage */
 				primaryStage.close();
@@ -132,7 +132,7 @@ public class ClientScreen extends Application {
 		rootPane.setVgap(10);
 
 
-		ListView<String> chatListView = new ListView<String>();
+		ListView<String> chatListView = new ListView<>();
 		chatListView.setItems(client.chatLog);
 
 		setupPriveListView(rootPane);
@@ -160,30 +160,26 @@ public class ClientScreen extends Application {
 		System.exit(0);
 	}
 	public void setupPriveListView(GridPane rootPane) throws RemoteException{
-    	ListView<priveGesprek> priveListView = new ListView<priveGesprek>(); 
+    	ListView<priveGesprek> priveListView = new ListView<>();
         
         priveListView.setItems(ci.berichten);
-        priveListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        priveListView.setOnMouseClicked(event -> {
 
-            @Override
-            public void handle(MouseEvent event) {
-            	
-            	priveGesprek pg = priveListView.getSelectionModel().getSelectedItem();
-                //System.out.println("clicked on " + pg.getPartner());
-                rootPane.getChildren().remove(priveListView);
-                try {
-					handleListClick(pg, rootPane);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-                
-            }
-        });
+			priveGesprek pg = priveListView.getSelectionModel().getSelectedItem();
+			//System.out.println("clicked on " + pg.getPartner());
+			rootPane.getChildren().remove(priveListView);
+			try {
+				handleListClick(pg, rootPane);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+
+		});
+
         rootPane.add(priveListView, 1, 0);
     }
 	public void handleListClick(priveGesprek pg, GridPane rootPane) throws RemoteException{
-        ListView<String> priveListView = new ListView<String>();
+        ListView<String> priveListView = new ListView<>();
         priveListView.setItems(pg.getBerichten());
         rootPane.add(priveListView, 1, 0);
         

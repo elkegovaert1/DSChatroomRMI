@@ -46,11 +46,7 @@ public class ClientImpl extends UnicastRemoteObject implements ClientInterface{
 	public void disconnectClient(String s) throws RemoteException{
 		for(priveGesprek pg : berichten) {
 			if(pg.getPartner().equals(s)) {
-				Platform.runLater(new Runnable() {
-                    @Override public void run() {
-                        berichten.remove(pg);
-                    }
-                });
+				Platform.runLater(() -> berichten.remove(pg));
 				break;
 			}
 		}	
@@ -58,20 +54,32 @@ public class ClientImpl extends UnicastRemoteObject implements ClientInterface{
 	@Override
 	public void connectClient(String s) throws RemoteException {
 		priveGesprek pg = new priveGesprek(this, s);
-		berichten.add(pg);		
+		Platform.runLater(() -> {
+			berichten.add(pg);
+		});
 	}
+
 	@Override
 	public void receivePrivateMessage(String s, String sender) throws RemoteException {
-		for(priveGesprek pg : berichten) {
-			if(pg.getPartner().equals(sender) || name.equals(sender)){
-				Platform.runLater(new Runnable() {
-                    @Override public void run() {
-                    	pg.addBericht("[" + sender + "] " + s);	
-                    }
-                });					
+		System.out.println("Ontvangen van... " + s);
+		for (int i = 0; i < berichten.size(); i++) {
+			priveGesprek pg = berichten.get(i);
+			if(pg.getPartner().equals(sender)){
+				Platform.runLater(() -> pg.addBericht("[" + sender + "] " + s));
 				break;
 			}
 		}
-		
-	}	
+		// de fout is dat als we een bericht ook zelf moeten ontvangen dat we niet weten in welk gesprek t moet komen
+	}
+
+	@Override
+	public void addPrivateMessage(String s, String receiver) throws RemoteException{
+		for (int i = 0; i < berichten.size(); i++) {
+			priveGesprek pg = berichten.get(i);
+			if(pg.getPartner().equals(receiver)){
+				Platform.runLater(() -> pg.addBericht("[" + name + "] " + s));
+				break;
+			}
+		}
+	}
 }
