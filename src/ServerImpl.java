@@ -33,6 +33,7 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 				}
 				clients.add(ci);
 				clientNames.add(ci.getName());
+				System.out.println("New user: " + ci.getName());
 				ci.receiveMessage("[Server] Welcome Client "+ci.getName());
 				List<String> list = new ArrayList<>();
 				for(String s : clientNames) {
@@ -57,6 +58,7 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 				e.printStackTrace();
 			}
 		}
+		System.out.println("Sending message from "+ from.getName() + " to everyone: " + s);
 	}
 
 	@Override
@@ -98,6 +100,7 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 				clients.get(i).receivePrivateMessage(s, from.getName());
 				// naar zelf
 				from.addPrivateMessage(s, to);
+				System.out.println(from.getName() + " send private message to " + to + ": " + s);
 				break;
 			}
 		}

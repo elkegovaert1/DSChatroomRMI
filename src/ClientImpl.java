@@ -68,7 +68,6 @@ public class ClientImpl extends UnicastRemoteObject implements ClientInterface{
 				break;
 			}
 		}
-		// de fout is dat als we een bericht ook zelf moeten ontvangen dat we niet weten in welk gesprek t moet komen
 	}
 
 	@Override

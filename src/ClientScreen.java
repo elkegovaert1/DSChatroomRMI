@@ -160,7 +160,9 @@ public class ClientScreen extends Application {
 
 	@Override
 	public void stop() throws RemoteException {
-		ci.disconnected();
+		if (ci != null) {
+			ci.disconnected();
+		}
 		System.exit(0);
 	}
 
