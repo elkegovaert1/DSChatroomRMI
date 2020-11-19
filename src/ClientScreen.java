@@ -101,11 +101,12 @@ public class ClientScreen extends Application {
 
 				String username = nameField.getText();
 				ci = new ClientImpl(username, si);
-				si.sendToAll("Just Connected",ci);
 				boolean isConnected = si.newClient(ci);
 				if (!isConnected) {
 					errorLabel.setText("Username already taken.");
 				} else {
+					si.sendToAll("Just Connected",ci);
+
 					/* Change the scene of the primaryStage */
 					primaryStage.close();
 					primaryStage.setScene(makeChatUI(ci, si));
